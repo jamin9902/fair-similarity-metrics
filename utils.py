@@ -138,3 +138,19 @@ def load_nyc_names(embeddings, names_path):
     all_names_embed = embeddings.loc[names_from_df].values
     
     return all_names_embed, names_from_df
+
+
+from sklearn.cluster import KMeans 
+from matplotlib import pyplot
+
+def create_clusters(embeddings, num_clusters=2):
+    model = KMeans(n_clusters=num_clusters)
+    model.fit(embeddings)
+    clusters = pd.DataFrame(data = model.predict(embeddings), columns=['Cluster Label'], index=embeddings.index)
+    return clusters 
+
+def get_cluster_n(embeddings, clusters, n): 
+    indices = clusters.loc[clusters['Cluster Label'] == n].index 
+    words_from_df = embeddings.loc[indices].index.tolist()
+    cluster_n_embed = embeddings.loc[indices].values 
+    return cluster_n_embed, words_from_df

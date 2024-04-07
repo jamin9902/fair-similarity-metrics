@@ -1,36 +1,56 @@
 import numpy as np
 
-from utils import load_data, compl_svd_projector, generate_pairs
+from utils import load_data, compl_svd_projector, generate_pairs, create_clusters, get_cluster_n
 from explore import proximal_gd_sigmoid 
 from utils_test import run_method_test
 
 data_path = './sentiment_data/'
 embeddings_path = './sentiment_data/sentiment_glove.42B.300d.txt'
 
-_, X, y, vocab, all_names_embed, names_from_df = load_data(data_path, embeddings_path, state=None, names_path=data_path)
+# all_names_embed is an np array with shape (num_names, 300)
+embeddings, X, y, vocab, all_names_embed, names_from_df = load_data(data_path, embeddings_path, state=None, names_path=data_path)
+
+################ test clustering ################
+clusters = create_clusters(embeddings)
+zero_embed, zero_from_df = get_cluster_n(embeddings, clusters, 0)
+one_embed, one_from_df = get_cluster_n(embeddings, clusters, 1)
 
 ################ Get FACE projectors ################
 svd_dims = [3, 10, 50]
 proj_face = []
 for subspace_d in svd_dims:
-    proj = compl_svd_projector(all_names_embed, svd=subspace_d)
+    # CATHERINE
+    # proj = compl_svd_projector(all_names_embed, svd=subspace_d)
+    proj = compl_svd_projector(zero_embed, svd=subspace_d)
     proj_face.append(proj)
     
 ################ Get EXPLORE metric ################
 np.random.seed(1)
 
-# Comparable
+# Comparable, 3 cluster => 1 for comparable and 2 for incomprable ... sample 3 random?
 n_pairs_comp = 50000
+"""
 unique_names_idx = np.unique(names_from_df, return_index=True)[1]
 pairs_idx = generate_pairs(len(unique_names_idx), len(unique_names_idx), n_pairs=n_pairs_comp)
 comparable_pairs = all_names_embed[unique_names_idx[pairs_idx[0]]] - all_names_embed[unique_names_idx[pairs_idx[1]]]
+"""
+unique_zero_idx = np.unique(zero_from_df, return_index=True)[1]
+pairs_idx = generate_pairs(len(unique_zero_idx), len(unique_zero_idx), n_pairs=n_pairs_comp)
+comparable_pairs = zero_embed[unique_zero_idx[pairs_idx[0]] - unique_zero_idx[pairs_idx[1]]]
 
 # In-comparable
 n_pairs_incomp = 50000
+"""
 pos_idx = np.where(y==1)[0]
 neg_idx = np.where(y==-1)[0]
 pairs_idx = generate_pairs(len(pos_idx), len(neg_idx), n_pairs=n_pairs_incomp)
 incomp_pairs = X[pos_idx[pairs_idx[0]]] - X[neg_idx[pairs_idx[1]]]
+"""
+
+pairs_idx = generate_pairs(len(zero_from_df), len(one_from_df), n_pairs=n_pairs_incomp)
+incomp_pairs = zero_embed[pairs_idx[0]] - one_embed[pairs_idx[1]]
+
+
 
 # Pairs data
 X_pairs = np.vstack((comparable_pairs, incomp_pairs))
@@ -90,9 +110,13 @@ for m_idx, m_name in zip(method_idx, method_names):
     df[m_name] = result[test_idx][:,m_idx]
 df = pd.DataFrame(df)
 df = pd.melt(df, id_vars="test", var_name="Method", value_name="effect size")
+print(df)
 
+# CATHERINE: this keeps throwing the following error: AttributeError: module 'numpy' has no attribute 'float'. Tried for a little bit to debug it but it's not working. Will try harder later. 
+"""
 sns.set(font_scale=1.5)
 barplot = sns.catplot(x='test', y='effect size', hue='Method', data=df, kind='bar', aspect=2.1)
 barplot.set_axis_labels("", "Effect Size")
 plt.xticks(fontsize=14)
 barplot.savefig('weat-barplot.png')
+"""
