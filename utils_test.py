@@ -1,7 +1,8 @@
 import numpy as np
 from sklearn.preprocessing import normalize
 from sklearn.utils.random import sample_without_replacement
-from scipy.misc import comb
+# from scipy.misc import comb
+from scipy.special import comb
 from itertools import combinations
 
 def statistics(X, Y, A, B):

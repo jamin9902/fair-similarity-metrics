@@ -50,8 +50,10 @@ def load_data(data_path, embeddings_path, state=None, names_path=None):
     pos_words = load_lexicon(data_path + '/positive-words.txt')
     neg_words = load_lexicon(data_path + '/negative-words.txt')
     embeddings = load_embeddings(embeddings_path)
-    pos_vectors = embeddings.loc[pos_words].dropna()
-    neg_vectors = embeddings.loc[neg_words].dropna()
+    pos_vectors = embeddings.loc[embeddings.index.isin(pos_words)]
+    neg_vectors = embeddings.loc[embeddings.index.isin(neg_words)]
+    # pos_vectors = embeddings.loc[pos_words].dropna()
+    # neg_vectors = embeddings.loc[neg_words].dropna()
 
     vectors = pd.concat([pos_vectors, neg_vectors])
     targets = np.array([1 for entry in pos_vectors.index] + [-1 for entry in neg_vectors.index])

@@ -9,7 +9,6 @@ embeddings_path = './sentiment_data/sentiment_glove.42B.300d.txt'
 
 _, X, y, vocab, all_names_embed, names_from_df = load_data(data_path, embeddings_path, state=None, names_path=data_path)
 
-
 ################ Get FACE projectors ################
 svd_dims = [3, 10, 50]
 proj_face = []
