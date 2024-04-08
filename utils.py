@@ -5,6 +5,10 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics.pairwise import euclidean_distances
 from sklearn.utils.random import sample_without_replacement
 from sklearn.decomposition import TruncatedSVD
+# JAMIN 
+# Need to run 'pip install names-dataset' for import
+from names_dataset import NameDataset
+
 
 def load_embeddings(filename):
     """
@@ -107,6 +111,19 @@ def compl_svd_projector(names, svd=-1):
    proj = np.matmul(proj, basis.T)
    proj_compl = np.eye(proj.shape[0]) - proj
    return proj_compl
+
+# JAMIN
+# Load names from dataset at: https://github.com/philipperemy/name-dataset
+def load_names_df():
+    # Can be filtered on gender, country code, and top n most popular
+    # NOTE: Probably want to filter on English speaking countries since names can be in Chinese, Arabic, etc.
+    nd = NameDataset()
+
+    first_names = nd.first_names.keys()
+    last_names = nd.last_names.keys()
+
+    return first_names, last_names
+
 
 def load_nyc_names(embeddings, names_path):
     names_df = pd.read_csv(names_path + 'names.csv')
