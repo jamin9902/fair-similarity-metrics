@@ -156,6 +156,16 @@ def load_nyc_names(embeddings, names_path):
     
     return all_names_embed, names_from_df
 
+# get the food_words and their embeddings
+def load_food(embeddings, food_path):
+    food_words = set()
+    with open(food_path + 'food_words') as f:
+        for line in f:
+            food_words.add(line.strip())
+    food_words = [word for word in food_words if word in embeddings.index]
+    all_food_embed = embeddings.loc[food_words].values
+    return all_food_embed, food_words
+
 
 from sklearn.cluster import KMeans 
 from matplotlib import pyplot
