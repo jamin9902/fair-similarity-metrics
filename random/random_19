@@ -1,0 +1,111 @@
+Association test 0: target words are flowers and insects; attribute words are pleasant and unpleasant
+Running explore
+P-val is 0.000000; effect size is 1.631519
+Running FACE-3
+P-val is 0.000000; effect size is 1.614351
+Running FACE-10
+P-val is 0.000000; effect size is 1.607834
+Running FACE-50
+P-val is 0.000000; effect size is 1.701524
+
+Association test 1: target words are instruments and weapons; attribute words are pleasant and unpleasant
+Running explore
+P-val is 0.000000; effect size is 1.743945
+Running FACE-3
+P-val is 0.000000; effect size is 1.479932
+Running FACE-10
+P-val is 0.000000; effect size is 1.460196
+Running FACE-50
+P-val is 0.000000; effect size is 1.566674
+
+Association test 2: target words are mental and physical; attribute words are temporal and permanent
+Running explore
+P-val is 0.000000; effect size is 1.712121
+Running FACE-3
+P-val is 0.000040; effect size is 1.532783
+Running FACE-10
+P-val is 0.000000; effect size is 1.601119
+Running FACE-50
+P-val is 0.000040; effect size is 1.556590
+
+Association test 3: target words are white and black; attribute words are pleasant and unpleasant
+Running explore
+P-val is 0.074080; effect size is 0.450405
+Running FACE-3
+P-val is 0.000000; effect size is 1.175931
+Running FACE-10
+P-val is 0.000000; effect size is 1.059623
+Running FACE-50
+P-val is 0.250820; effect size is 0.292325
+
+Association test 4: target words are white7 and black7; attribute words are pleasant and unpleasant
+Running explore
+P-val is 0.003820; effect size is 0.992918
+Running FACE-3
+P-val is 0.000060; effect size is 1.319462
+Running FACE-10
+P-val is 0.000380; effect size is 1.152518
+Running FACE-50
+P-val is 0.350700; effect size is 0.339807
+
+Association test 5: target words are white7 and black7; attribute words are pleasant9 and unpleasant9
+Running explore
+P-val is 0.003680; effect size is 0.995144
+Running FACE-3
+P-val is 0.001080; effect size is 1.117078
+Running FACE-10
+P-val is 0.005100; effect size is 0.982270
+Running FACE-50
+P-val is 0.099960; effect size is 0.593746
+
+Association test 6: target words are male_names and female_names; attribute words are career and family
+Running explore
+P-val is 0.000720; effect size is 1.423481
+Running FACE-3
+P-val is 0.000000; effect size is 1.689234
+Running FACE-10
+P-val is 0.000000; effect size is 1.647917
+Running FACE-50
+P-val is 0.000000; effect size is 1.661602
+
+Association test 7: target words are math and arts; attribute words are male_terms and female_terms
+Running explore
+P-val is 0.068840; effect size is 0.597349
+Running FACE-3
+P-val is 0.000040; effect size is 1.594781
+Running FACE-10
+P-val is 0.000000; effect size is 1.658106
+Running FACE-50
+P-val is 0.000000; effect size is 1.608930
+
+Association test 8: target words are science10 and arts10; attribute words are male_terms10 and female_terms10
+Running explore
+P-val is 0.005160; effect size is 1.158631
+Running FACE-3
+P-val is 0.006760; effect size is 1.103906
+Running FACE-10
+P-val is 0.007120; effect size is 1.099356
+Running FACE-50
+P-val is 0.017800; effect size is 0.927119
+
+Association test 9: target words are young and old; attribute words are pleasant9 and unpleasant9
+Running explore
+P-val is 0.141640; effect size is 0.327862
+Running FACE-3
+P-val is 0.017480; effect size is 0.939934
+Running FACE-10
+P-val is 0.020040; effect size is 0.911525
+Running FACE-50
+P-val is 0.210640; effect size is 0.121156
+
+             test   Method  effect size
+0   FLvINS-PLvUPL  EXPLORE     1.631519
+1    EAvAA-PLvUPL  EXPLORE     0.450405
+2   MNvFN-CARvFAM  EXPLORE     1.423481
+3    SCvART-MTvFT  EXPLORE     1.158631
+4  YNGvOLD-PLvUPL  EXPLORE     0.327862
+5   FLvINS-PLvUPL   FACE-3     1.614351
+6    EAvAA-PLvUPL   FACE-3     1.175931
+7   MNvFN-CARvFAM   FACE-3     1.689234
+8    SCvART-MTvFT   FACE-3     1.103906
+9  YNGvOLD-PLvUPL   FACE-3     0.939934
