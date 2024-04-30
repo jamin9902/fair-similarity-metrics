@@ -1,0 +1,1 @@
+This folder contains the results of our clustering experiments. The files come in pairs (e.g. run0 and words0) where the 'run' file contains the output of the WEAT tests on the metric learned using the comparability data generated from the 'words' file.
