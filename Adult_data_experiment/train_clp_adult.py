@@ -1,10 +1,11 @@
 import numpy as np
 from sklearn.decomposition import TruncatedSVD
-import tensorflow as tf
 from collections import OrderedDict
 import sys
 import os
 from sklearn.metrics import roc_auc_score
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 
 def get_consistency(X, l_pred, gender_idx = 39, race_idx = 40, relationship_idx = [33, 34, 35, 36, 37, 38], husband_idx = 33, wife_idx = 38):
     '''
@@ -502,7 +503,7 @@ RESULTS_BASE = './results/'
 def train_fair_nn(X_train, y_train, tf_prefix='', X_test=None, X_test_counter=None, y_test=None, 
                   weights=None, n_units = None, balance_batch=True, lr=0.001, batch_size=100, epoch=100, 
                   verbose=True, activ_f = tf.nn.relu, l2_reg=0., plot=False, lamb_init=2., adv_epoch=100, 
-                  adv_step=1., ro=None, fair_info=[], l2_attack=0.01, adv_epoch_full=10, lambda_clp=0.,
+                  adv_step=0.01, ro=None, fair_info=[], l2_attack=0.01, adv_epoch_full=10, lambda_clp=0.,
                   fair_start=0.5, counter_init=False, seed=None):
   
     protected_y_train, protected_y_test, y_names, protected_names, protected_directions, Sigma_fair = fair_info
@@ -517,7 +518,7 @@ def train_fair_nn(X_train, y_train, tf_prefix='', X_test=None, X_test_counter=No
         Sigma_fair_proj = proj_compl @ Sigma_fair @ proj_compl
         dist_f = explore_dist(Sigma_fair_proj)
         
-    global_step = tf.contrib.framework.get_or_create_global_step()
+    global_step = tf.train.get_or_create_global_step()
 
     N, D = X_train.shape
     lamb = lamb_init
@@ -557,9 +558,16 @@ def train_fair_nn(X_train, y_train, tf_prefix='', X_test=None, X_test_counter=No
         train_loss = loss_sensr
         
     ## Attack is subspace
+    print(adv_step)
     fair_optimizer = tf.train.AdamOptimizer(learning_rate=adv_step)
-#    fair_optimizer = tf.train.GradientDescentOptimizer(learning_rate=adv_step)
-    
+    # fair_optimizer = tf.train.GradientDescentOptimizer(learning_rate=adv_step)
+
+    if fair_subspace_loss is None:
+        raise ValueError("fair_subspace_loss computed as None")
+
+
+    print(fair_subspace_loss, adv_weights, global_step)
+
     fair_step = fair_optimizer.minimize(-fair_subspace_loss, var_list=[adv_weights], global_step=global_step)
     reset_fair_optimizer = tf.variables_initializer(fair_optimizer.variables())
     reset_adv_weights = adv_weights.assign(tf.zeros([batch_size,K_protected]))
@@ -788,7 +796,6 @@ def train_fair_nn(X_train, y_train, tf_prefix='', X_test=None, X_test_counter=No
                     summary_bios_train = bios_gap(train_logits, y_train, protected_y_train, y_names=y_names, protected_names=protected_names, prefix='Train ')
                     summary_bios_test = bios_gap(test_logits, y_test, protected_y_test, y_names=y_names, protected_names=protected_names, prefix='Test ')
                     gender_race_consistency, spouse_consistency = get_consistency(X_test, lambda x: l_pred.eval(feed_dict={tf_X: x}))
-                    # gender_race_consistency, spouse_consistency = get_consistency(X_test, l_pred, tf_X)
                     print('Epoch %d gender-race consistency %g' % (it, gender_race_consistency))
                     print('Epoch %d spouse consistency %g' % (it, spouse_consistency)) 
                         
@@ -816,6 +823,8 @@ def train_fair_nn(X_train, y_train, tf_prefix='', X_test=None, X_test_counter=No
                 saver.save(sess,
                          os.path.join(tb_dir, 'fair_model'),
                          global_step=global_step)
+                
+            global_step.assign_add(1)
         
         saver.save(sess,
                  os.path.join(tb_dir, 'fair_model'),

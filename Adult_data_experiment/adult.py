@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from aif360.datasets import BinaryLabelDataset
-import tensorflow as tf
+from tensorflow.python.framework import ops
 import time
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from scipy.stats import sem
@@ -9,6 +9,8 @@ import train_clp_adult as SenSR
 from aif360.metrics import BinaryLabelDatasetMetric, ClassificationMetric
 from sklearn.decomposition import TruncatedSVD
 import AdvDebCustom
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 
 def get_adult_data():
     '''
@@ -62,7 +64,7 @@ def preprocess_adult_data(seed = 0):
     y_train = dataset_orig_train.labels
     y_test = dataset_orig_test.labels
 
-    one_hot = OneHotEncoder(sparse=False)
+    one_hot = OneHotEncoder(sparse_output=False)
     one_hot.fit(y_train.reshape(-1,1))
     names_income = one_hot.categories_
     y_train = one_hot.transform(y_train.reshape(-1,1))
@@ -372,11 +374,9 @@ def run_SenSR_experiment(X_train, X_test, X_gender_train, X_gender_test, y_train
         verbose=True,
         l2_reg=0.,
         lamb_init=2.,
-        subspace_epoch=50,
-        subspace_step=10,
-        eps=.001,
-        full_step=.0001,
-        full_epoch=40)
+        adv_epoch=50,
+        adv_step=10
+        )
 
 def run_project_experiment(X_train, X_test, X_gender_train, X_gender_test, y_train, y_test, y_gender_train, y_gender_test, directory, i):
     _, proj_compl = get_sensitive_directions_and_projection_matrix(X_gender_train, y_gender_train, X_gender_test, y_gender_test)
@@ -440,7 +440,7 @@ def run_experiments(name, num_exp, directory):
         # get train/test data
         X_train, X_test, y_train, y_test, X_gender_train, X_gender_test, y_gender_train, y_gender_test, dataset_orig_train, dataset_orig_test = preprocess_adult_data(seed = i)
 
-        tf.reset_default_graph()
+        ops.reset_default_graph()
 
         # run experiments
         if name == 'baseline':
@@ -469,7 +469,9 @@ def run_experiments(name, num_exp, directory):
         # get accuracy, balanced accuracy, gender/race gap rms, gender/race max gap
 
         if name != 'adv_deb':
-            np.save(directory+'weights_'+str(i), weights)
+            # weights_array = np.stack(weights)
+            # np.save(directory + 'weights_' + str(i), weights_array)
+            # np.save(directory+'weights_'+str(i), weights)
             preds = np.argmax(test_logits, axis = 1)
         acc_temp, bal_acc_temp, race_gap_rms_temp, race_max_gap_temp, gender_gap_rms_temp, gender_max_gap_temp = get_metrics(dataset_orig_test, preds)
 
@@ -494,16 +496,16 @@ def run_experiments(name, num_exp, directory):
     for (variable, name) in save_info:
         save_to_file(directory, variable, name)
 
-# num_exp = 1
-# change the directory below in run_experiments to the directoy where you want to save the results of the experiments
-#run_experiments('baseline', num_exp, '/Users/amandarg/Documents/ICLR_code_2019/experiments/baseline/')
-#run_experiments('project', num_exp, '/Users/amandarg/Documents/ICLR_code_2019/experiments/project/')
+num_exp = 1
+#change the directory below in run_experiments to the directoy where you want to save the results of the experiments
+# run_experiments('baseline', num_exp, '/Users/jamin/Harvard_CS/cs226r/CS-226-Final-Project/Adult_data_experiment/experiments')
+# run_experiments('project', num_exp, '/Users/jamin/Harvard_CS/cs226r/CS-226-Final-Project/Adult_data_experiment/experiments')
 # t_s = time.time()
-# run_experiments('SenSR', num_exp, './results/')
+# run_experiments('SenSR', num_exp, '/Users/jamin/Harvard_CS/cs226r/CS-226-Final-Project/Adult_data_experiment/experiments')
 # t_e = time.time()
 # print('Took', (t_e - t_s)/60, 'min')
-#run_experiments('adv_deb', num_exp, '/Users/amandarg/Documents/ICLR_code_2019/experiments/adv_debias/')
+# run_experiments('adv_deb', num_exp, '/Users/jamin/Harvard_CS/cs226r/CS-226-Final-Project/Adult_data_experiment/experiments')
 
-#X_train, X_test, y_train, y_test, X_gender_train, X_gender_test, y_gender_train, y_gender_test, dataset_orig_train, dataset_orig_test = preprocess_adult_data(seed=0)
+# X_train, X_test, y_train, y_test, X_gender_train, X_gender_test, y_gender_train, y_gender_test, dataset_orig_train, dataset_orig_test = preprocess_adult_data(seed=0)
 
-#xx, tt = get_sensitive_directions_and_projection_matrix(X_gender_train, y_gender_train, X_gender_test, y_gender_test, gender_race_features_idx = [39, 40], gender_idx = 39 )
+# xx, tt = get_sensitive_directions_and_projection_matrix(X_gender_train, y_gender_train, X_gender_test, y_gender_test, gender_race_features_idx = [39, 40], gender_idx = 39 )

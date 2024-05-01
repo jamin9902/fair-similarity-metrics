@@ -1,4 +1,5 @@
 import tensorflow as tf
+from tensorflow.python.framework import ops
 import numpy as np
 import os
 from adult import preprocess_adult_data, get_sensitive_directions_and_projection_matrix, get_consistency, get_metrics
@@ -52,6 +53,8 @@ def main(out_folder = './metrics/'):
     lr = options.lr
     idx = options.idx
     
+    print(adv_step)
+
     seed = options.seed
 
     
@@ -86,7 +89,7 @@ def main(out_folder = './metrics/'):
     
     Sigma_fair_mle = proximal_gd_sigmoid(X_pairs,Y_pairs,mbs=1000,maxiter=10000)
 
-    tf.reset_default_graph()
+    ops.reset_default_graph()
     fair_info = [y_gender_train, y_gender_test, names_income[0], names_gender[0], sensitive_directions, Sigma_fair_mle]
     weights, train_logits, test_logits, _  = train_fair_nn(X_train, y_train, tf_prefix='explore', adv_epoch_full=adv_epoch_full, l2_attack=l2_attack,
                                               adv_epoch=adv_epoch, ro=ro, adv_step=adv_step, plot=True, fair_info=fair_info, balance_batch=True, 
